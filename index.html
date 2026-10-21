@@ -1,0 +1,1515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mark</title>
+
+  <!-- Google Fonts & Chart.js -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    :root {
+      --bg-gradient: linear-gradient(135deg, #f0f4f8 0%, #e2e8f0 100%);
+      --card-bg: #ffffff;
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --primary-light: #eff6ff;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border-color: #e2e8f0;
+      --error: #ef4444;
+      --error-bg: #fef2f2;
+      --success: #10b981;
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+      --shadow-lg: 0 10px 25px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      background: var(--bg-gradient);
+      color: var(--text-main);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 32px 20px;
+    }
+
+    /* Container */
+    .container {
+      background-color: var(--card-bg);
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: var(--shadow-lg);
+      width: 100%;
+      max-width: 1000px;
+      border: 1px solid rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(10px);
+    }
+
+    /* Course Header Card */
+    .course-header {
+      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+      color: #ffffff;
+      padding: 24px 32px;
+      border-radius: 16px;
+      margin-bottom: 28px;
+      box-shadow: var(--shadow-md);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .course-title {
+      font-size: 1.4rem;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      color: #38bdf8;
+    }
+
+    .lecturer-name {
+      font-size: 0.95rem;
+      color: #cbd5e1;
+      font-weight: 500;
+    }
+
+    /* Navigation Tabs */
+    .tabs {
+      display: flex;
+      background-color: #f1f5f9;
+      padding: 4px;
+      border-radius: 12px;
+      margin-bottom: 32px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 12px 20px;
+      background: none;
+      border: none;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .tab-btn.active {
+      background-color: var(--card-bg);
+      color: var(--primary);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .tab-content {
+      display: none;
+      animation: fadeIn 0.25s ease-in-out;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    h1 {
+      font-size: 1.6rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--text-main);
+      text-align: center;
+      margin-bottom: 6px;
+    }
+
+    p.subtitle {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 28px;
+      text-align: center;
+    }
+
+    /* Search Box with Prefix */
+    .search-box {
+      display: flex;
+      gap: 12px;
+      max-width: 600px;
+      margin: 0 auto 28px auto;
+    }
+
+    .input-prefix-wrapper {
+      display: flex;
+      align-items: center;
+      flex: 1;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      background-color: #f8fafc;
+      overflow: hidden;
+      transition: all 0.2s ease;
+    }
+
+    .input-prefix-wrapper:focus-within {
+      border-color: var(--primary);
+      background-color: #ffffff;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+
+    .prefix-badge {
+      background-color: #e2e8f0;
+      color: var(--text-main);
+      font-weight: 700;
+      font-size: 0.95rem;
+      padding: 12px 14px;
+      border-right: 1px solid var(--border-color);
+      user-select: none;
+    }
+
+    .input-prefix-wrapper input[type="text"] {
+      border: none;
+      background: transparent;
+      padding: 12px 16px;
+      font-size: 0.95rem;
+      outline: none;
+      width: 100%;
+      color: var(--text-main);
+    }
+
+    select, input[type="password"] {
+      padding: 12px 16px;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      font-size: 0.95rem;
+      outline: none;
+      transition: all 0.2s ease;
+      background-color: #f8fafc;
+      color: var(--text-main);
+    }
+
+    select:focus, input[type="password"]:focus {
+      border-color: var(--primary);
+      background-color: #ffffff;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+
+    button.btn {
+      border: none;
+      padding: 12px 24px;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-search {
+      background-color: var(--primary);
+      color: white;
+      box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
+    }
+
+    .btn-search:hover {
+      background-color: var(--primary-hover);
+      transform: translateY(-1px);
+    }
+
+    .btn-reset {
+      background-color: #f1f5f9;
+      color: var(--text-muted);
+    }
+
+    .btn-reset:hover {
+      background-color: #e2e8f0;
+      color: var(--text-main);
+    }
+
+    /* Student Result Card */
+    .result-card {
+      display: none;
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 28px;
+      background-color: #f8fafc;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .result-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 16px;
+      margin-bottom: 20px;
+    }
+
+    .student-name {
+      font-size: 1.4rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+
+    .student-matric {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .student-class {
+      display: inline-block;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--primary);
+      background-color: var(--primary-light);
+      padding: 4px 12px;
+      border-radius: 20px;
+    }
+
+    .student-content-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    .marks-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.92rem;
+    }
+
+    .marks-table th, .marks-table td {
+      padding: 10px 8px;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .marks-table th {
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .marks-table td.weight-col, 
+    .marks-table td.score-col {
+      text-align: right;
+    }
+
+    .quiz-breakdown {
+      font-size: 0.8rem;
+      margin-top: 3px;
+      color: var(--text-muted);
+    }
+
+    .quiz-breakdown .correct {
+      color: var(--success);
+      font-weight: 600;
+    }
+
+    .quiz-breakdown .wrong {
+      color: var(--error);
+      font-weight: 600;
+    }
+
+    /* Inline Quiz Grade Tag */
+    .quiz-grade-tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--primary);
+      background-color: #dbeafe;
+      padding: 2px 8px;
+      border-radius: 6px;
+      margin-left: 6px;
+    }
+
+    .quiz-grade-tag.fail {
+      color: var(--error);
+      background-color: #fee2e2;
+    }
+
+    .summary-box {
+      background-color: var(--primary-light);
+      border: 1px solid #bfdbfe;
+      border-radius: 14px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      gap: 16px;
+    }
+
+    .total-score {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--primary);
+    }
+
+    .grade-badge {
+      font-weight: 700;
+      padding: 8px 20px;
+      border-radius: 10px;
+      background-color: var(--primary);
+      color: white;
+      font-size: 1.1rem;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .grade-badge.fail {
+      background-color: var(--error);
+    }
+
+    /* Target Calculator Section */
+    .calculator-card {
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .calculator-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .calculator-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .target-select-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .target-select-group label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .target-result-box {
+      background-color: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .target-score-text {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--primary);
+      white-space: nowrap;
+    }
+
+    .target-message {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+    }
+
+    .error-message {
+      display: none;
+      color: var(--error);
+      font-size: 0.95rem;
+      font-weight: 500;
+      text-align: center;
+      padding: 14px;
+      background-color: var(--error-bg);
+      border-radius: 12px;
+      border: 1px solid #fecaca;
+      max-width: 600px;
+      margin: 0 auto 20px auto;
+    }
+
+    /* Filter Controls */
+    .filter-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 20px;
+      background-color: #f8fafc;
+      padding: 20px;
+      border-radius: 16px;
+      border: 1px solid var(--border-color);
+    }
+
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .filter-group label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-muted);
+    }
+
+    .filter-group select {
+      width: 100%;
+    }
+
+    /* Performance Summary Cards */
+    .metrics-summary-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .metric-card {
+      background-color: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 18px 16px;
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .metric-card .metric-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .metric-card .metric-value {
+      font-size: 1.45rem;
+      font-weight: 800;
+      color: var(--primary);
+    }
+
+    .metric-card.success .metric-value {
+      color: var(--success);
+    }
+
+    /* Chart Card */
+    .chart-card {
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 28px;
+      background-color: #ffffff;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .chart-title {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+      color: var(--text-main);
+      text-align: center;
+    }
+
+    /* Grade Summary Grid */
+    .grade-summary-grid {
+      display: grid;
+      grid-template-columns: repeat(10, 1fr);
+      gap: 8px;
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px dashed var(--border-color);
+    }
+
+    .grade-count-box {
+      background-color: #f8fafc;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 10px 4px;
+      text-align: center;
+      transition: transform 0.15s ease;
+    }
+
+    .grade-count-box:hover {
+      transform: translateY(-2px);
+    }
+
+    .grade-count-box .lbl {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
+    .grade-count-box .val {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--primary);
+      margin-top: 2px;
+    }
+
+    /* 3-Column Rankings Grid */
+    .rankings-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .section-card {
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 20px;
+      background-color: #ffffff;
+      box-shadow: var(--shadow-sm);
+      height: 100%;
+    }
+
+    .section-title {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .section-title.top { color: var(--success); }
+    .section-title.middle { color: var(--primary); }
+    .section-title.lowest { color: var(--error); }
+
+    .rank-list {
+      list-style: none;
+    }
+
+    .rank-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px dashed var(--border-color);
+      font-size: 0.9rem;
+    }
+
+    .rank-item:last-child {
+      border-bottom: none;
+    }
+
+    .rank-name {
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .rank-matric-tag {
+      font-weight: 500;
+      color: var(--text-muted);
+      font-size: 0.82rem;
+      display: block;
+      margin-top: 2px;
+    }
+
+    .rank-details {
+      color: var(--text-muted);
+      font-size: 0.78rem;
+      margin-top: 2px;
+    }
+
+    .rank-score {
+      font-weight: 700;
+      text-align: right;
+      color: var(--text-main);
+      background-color: #f1f5f9;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      white-space: nowrap;
+    }
+
+    .no-data {
+      color: var(--text-muted);
+      font-style: italic;
+      font-size: 0.88rem;
+      padding: 8px 0;
+    }
+
+    /* Password Modal */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(6px);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      animation: fadeIn 0.2s ease-in-out;
+    }
+
+    .modal-card {
+      background: #ffffff;
+      padding: 32px;
+      border-radius: 16px;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: var(--shadow-lg);
+      text-align: center;
+      border: 1px solid var(--border-color);
+    }
+
+    .modal-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--text-main);
+      margin-bottom: 8px;
+    }
+
+    .modal-subtitle {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+    }
+
+    .modal-input {
+      width: 100%;
+      margin-bottom: 12px;
+      text-align: center;
+      letter-spacing: 0.1em;
+      font-size: 1.1rem;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .modal-actions button {
+      flex: 1;
+    }
+
+    .modal-error {
+      color: var(--error);
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-top: 10px;
+      display: none;
+    }
+
+    @media (max-width: 850px) {
+      .student-content-grid {
+        grid-template-columns: 1fr;
+      }
+      .metrics-summary-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .rankings-grid {
+        grid-template-columns: 1fr;
+      }
+      .grade-summary-grid {
+        grid-template-columns: repeat(5, 1fr);
+      }
+      .target-result-box {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <!-- Course & Lecturer Info Header -->
+    
+
+
+
+    <!-- ================= STUDENT VIEW ================= -->
+    <div id="studentView" class="tab-content active">
+      <h1>Check Your Result</h1>
+      <p class="subtitle">You are so close to the victory. Don't give up</p>
+
+      <div class="search-box">
+        <div class="input-prefix-wrapper">
+          <span class="prefix-badge">926</span>
+          <input type="text" id="matricInput" placeholder="Enter the last 4 digits of your matric no" maxlength="4" />
+        </div>
+        <button class="btn btn-search" onclick="searchResult()">Search</button>
+        <button class="btn btn-reset" onclick="resetForm()">Reset</button>
+      </div>
+
+      <div id="errorMessage" class="error-message"></div>
+
+      <div id="resultCard" class="result-card">
+        <div class="result-header">
+          <div>
+            <div class="student-name" id="resName">-</div>
+            <div class="student-matric" id="resMatric">-</div>
+          </div>
+          <div class="student-class" id="resClass">-</div>
+        </div>
+
+        <div class="student-content-grid">
+          <!-- Assessment Table -->
+          <table class="marks-table">
+            <thead>
+              <tr>
+                <th>Assessment</th>
+                <th style="text-align: right;">Weight</th>
+                <th style="text-align: right;">Marks</th>
+              </tr>
+            </thead>
+            <tbody id="marksBody">
+              <!-- Populated by JavaScript -->
+            </tbody>
+          </table>
+
+          <!-- Carry Mark Summary Box -->
+          <div class="summary-box" id="summaryBox">
+            <div>
+              <span style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); display: block; margin-bottom: 4px;">Current Carry Mark</span>
+              <span class="total-score" id="resCurrentTotal">0 / 60%</span>
+            </div>
+            <div>
+              <span class="grade-badge" id="resGrade">Grade: -</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Target Grade Calculator Section -->
+        <div class="calculator-card" id="calculatorCard">
+          <div class="calculator-header">
+            <div class="calculator-title">🎯 Final Exam Target Calculator (60 MCQs)</div>
+            <div class="target-select-group">
+              <label for="targetGradeSelect">Select Target Grade:</label>
+              <select id="targetGradeSelect" onchange="calculateTargetExamScore()">
+                <option value="A">Grade A (80%)</option>
+                <option value="A-">Grade A- (75%)</option>
+                <option value="B+">Grade B+ (70%)</option>
+                <option value="B">Grade B (65%)</option>
+                <option value="B-">Grade B- (60%)</option>
+                <option value="C+">Grade C+ (55%)</option>
+                <option value="C">Grade C (50%)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="target-result-box">
+            <div>
+              <span class="target-message" id="targetMessage">Required Correct MCQs in Final Exam:</span>
+            </div>
+            <div class="target-score-text" id="targetScoreOutput">- / 60 MCQs</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ================= LECTURER VIEW ================= -->
+    <div id="lecturerView" class="tab-content">
+      <h1>Lecturer Dashboard</h1>
+      <p class="subtitle">Class performance analytics & rankings</p>
+
+      <!-- Filter Controls: Class & Assessment -->
+      <div class="filter-grid">
+        <div class="filter-group">
+          <label for="classFilter">Select Class</label>
+          <select id="classFilter" onchange="loadLecturerDashboard()">
+            <option value="ALL">All Classes</option>
+            <option value="TSS 1">TSS 1</option>
+            <option value="TSS 2">TSS 2</option>
+            <option value="TPM 10">TPM 10</option>
+            <option value="TPM 11">TPM 11</option>
+            <option value="TPM 12">TPM 12</option>
+            <option value="TPM 13">TPM 13</option>
+            <option value="TPM 14">TPM 14</option>
+            <option value="TPM 15">TPM 15</option>
+            <option value="TPM 16">TPM 16</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label for="assessmentFilter">Select Assessment</label>
+          <select id="assessmentFilter" onchange="loadLecturerDashboard()">
+            <option value="overall">Overall Total Mark (100%)</option>
+            <option value="quiz">Quiz (10%) - 30 Qs</option>
+            <option value="assign1">Individual Assignment 1 (5%)</option>
+            <option value="assign2">Individual Assignment 2 (5%)</option>
+            <option value="groupProj">Group Project (20%)</option>
+            <option value="labTest">Lab Test (20%)</option>
+            <option value="finalExam">Final Exam (40%)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- PERFORMANCE SUMMARY CARDS -->
+      <div class="metrics-summary-grid">
+        <div class="metric-card">
+          <div class="metric-label">Total Students</div>
+          <div class="metric-value" id="metricTotalStudents">0</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Class Average</div>
+          <div class="metric-value" id="metricClassAverage">0.0%</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Highest Mark</div>
+          <div class="metric-value" id="metricHighestMark">0.0%</div>
+        </div>
+        <div class="metric-card success">
+          <div class="metric-label">Pass Rate (&ge;50%)</div>
+          <div class="metric-value" id="metricPassRate">0.0%</div>
+        </div>
+      </div>
+
+      <!-- Grade Distribution Bar Chart & Total Counts Grid -->
+      <div class="chart-card">
+        <div class="chart-title">📊 Grade Distribution Overview</div>
+        <canvas id="gradeChart" height="120"></canvas>
+        <div class="grade-summary-grid" id="gradeSummaryGrid"></div>
+      </div>
+
+      <!-- Wide 3-Column Rankings Layout -->
+      <div class="rankings-grid">
+        <!-- Top 3 Students -->
+        <div class="section-card">
+          <div class="section-title top">🏆 Top 3 Students</div>
+          <ul class="rank-list" id="topList"></ul>
+        </div>
+
+        <!-- Middle 3 Students -->
+        <div class="section-card">
+          <div class="section-title middle">📊 Middle 3 Students</div>
+          <ul class="rank-list" id="middleList"></ul>
+        </div>
+
+        <!-- Lowest 3 Students -->
+        <div class="section-card">
+          <div class="section-title lowest">⚠️ Lowest 3 Students</div>
+          <ul class="rank-list" id="lowestList"></ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PASSWORD PROMPT MODAL -->
+  <div id="passwordModal" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-title">🔐 Lecturer Authentication</div>
+      <div class="modal-subtitle">Enter password to access class analytics & rankings</div>
+      <input type="password" id="lecturerPasswordInput" class="modal-input" placeholder="Password" />
+      <div id="modalError" class="modal-error">Incorrect password. Please try again.</div>
+      <div class="modal-actions" style="margin-top: 16px;">
+        <button class="btn btn-reset" onclick="closePasswordModal()">Cancel</button>
+        <button class="btn btn-search" onclick="verifyPassword()">Unlock</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const DEFAULT_PREFIX = "926";
+    const TOTAL_QUIZ_QUESTIONS = 30;
+    const TOTAL_FINAL_QUESTIONS = 60; // 60 MCQs in Final Exam
+    const FINAL_EXAM_WEIGHT = 40;       // Final Exam is worth 40%
+    const LECTURER_PASSWORD = "1234";   // Password for Lecturer View
+    let isLecturerUnlocked = false;    // Tracks if authenticated in session
+
+    const GRADE_SCHEME = [
+      { grade: "A+", min: 90,    max: 100 },
+      { grade: "A",  min: 80,    max: 89.99 },
+      { grade: "A-", min: 75,    max: 79.99 },
+      { grade: "B+", min: 70,    max: 74.99 },
+      { grade: "B",  min: 65,    max: 69.99 },
+      { grade: "B-", min: 60,    max: 64.99 },
+      { grade: "C+", min: 55,    max: 59.99 },
+      { grade: "C",  min: 50,    max: 54.99 },
+      { grade: "C-", min: 45,    max: 49.99 },
+      { grade: "D",  min: 40,    max: 44.99 },
+      { grade: "F",  min: 0,     max: 39.99 }
+    ];
+
+    const ASSESSMENTS = [
+      { key: "quiz", name: "Quiz (30 Questions)", weight: 10 },
+      { key: "assign1", name: "Individual Assignment 1", weight: 5 },
+      { key: "assign2", name: "Individual Assignment 2", weight: 5 },
+      { key: "groupProj", name: "Group Project", weight: 20 },
+      { key: "labTest", name: "Lab Test", weight: 20 },
+      { key: "finalExam", name: "Final Exam", weight: 40 }
+    ];
+
+    const studentListRaw = [
+      // ---CLASS: TEST ---
+    
+
+      // --- CLASS: TSS 1 ---
+      { matric: "9262658", class: "TSS 1", quiz: 7.67, assign1: 5, assign2: 5, groupProj: 20, labTest: 20, finalExam: null},
+      { matric: "9262616", class: "TSS 1", quiz: 7, assign1: 5, assign2: 5, groupProj: 20, labTest: 19.50, finalExam: null},
+      { matric: "9262694", class: "TSS 1", quiz: 8, assign1: 5, assign2: 5, groupProj: 20, labTest: 20, finalExam: null},
+      { matric: "9262536", class: "TSS 1", quiz: 6.33, assign1: 5, assign2: 5, groupProj: 20, labTest: 17.50, finalExam: null},
+      { matric: "9262601", class: "TSS 1", quiz: 7.67, assign1: 5, assign2: 5, groupProj: 20, labTest: 19.50, finalExam: null},
+      { matric: "9262569", class: "TSS 1", quiz: 7.67, assign1: 5, assign2: 5, groupProj: 20, labTest: 20, finalExam: null},
+      { matric: "9262671", class: "TSS 1", quiz: 7.33, assign1: 5, assign2: 5, groupProj: 20, labTest: 20, finalExam: null},
+      { matric: "9262639", class: "TSS 1", quiz: 6.33, assign1: 5, assign2: 5, groupProj: 20, labTest: 18.50, finalExam: null},
+      { matric: "9262588", class: "TSS 1", quiz: 8.33, assign1: 5, assign2: 5, groupProj: 20, labTest: 17, finalExam: null},
+      { matric: "9262560", class: "TSS 1", quiz: 9.33, assign1: 5, assign2: 5, groupProj: 20, labTest: 19.50, finalExam: null},
+      { matric: "9262643", class: "TSS 1", quiz: 7.67, assign1: 5, assign2: 5, groupProj: 20, labTest: 20, finalExam: null},
+      { matric: "9261858", class: "TSS 1", quiz: 8.33, assign1: 5, assign2: 5, groupProj: 20, labTest: 20, finalExam: null},
+      { matric: "9262615", class: "TSS 1", quiz: 7.33, assign1: 5, assign2: 5, groupProj: 20, labTest: 19, finalExam: null},
+      { matric: "9262531", class: "TSS 1", quiz: 8, assign1: 5, assign2: 5, groupProj: 20, labTest: 20, finalExam: null},
+      { matric: "9262709", class: "TSS 1", quiz: 7.67, assign1: 5, assign2: 5, groupProj: 20, labTest: 18, finalExam: null},
+      { matric: "9262681", class: "TSS 1", quiz: 4.67, assign1: 5, assign2: 5, groupProj: 20, labTest: 20, finalExam: null},
+      { matric: "9262740", class: "TSS 1", quiz: 7.67, assign1: 5, assign2: 5, groupProj: 20, labTest: 20, finalExam: null},
+      { matric: "9262737", class: "TSS 1", quiz: 7.67, assign1: 5, assign2: 5, groupProj: 20, labTest: 17, finalExam: null},
+      { matric: "9262742", class: "TSS 1", quiz: 4.67, assign1: 5, assign2: 5, groupProj: 20, labTest: 15, finalExam: null},
+      
+
+      // --- CLASS: TSS 2 ---
+      { matric: "9262627", class: "TSS 2", quiz: 6.67, assign1: 5, assign2: 5, groupProj: 20, labTest: 18.00, finalExam: null},
+      { matric: "9262721", class: "TSS 2", quiz: 7.00, assign1: 5, assign2: 5, groupProj: 20, labTest: 20.00, finalExam: null},
+      { matric: "9262701", class: "TSS 2", quiz: 7.00, assign1: 5, assign2: 5, groupProj: 20, labTest: 18.00, finalExam: null},
+      { matric: "9262679", class: "TSS 2", quiz: 6.00, assign1: 5, assign2: 5, groupProj: 20, labTest: 18.50, finalExam: null},
+      { matric: "9262548", class: "TSS 2", quiz: 4.67 , assign1: 5, assign2: 5, groupProj: 20, labTest: 20.00, finalExam: null},
+      { matric: "9262526", class: "TSS 2", quiz: 7.67, assign1: 5, assign2: 5, groupProj: 20, labTest: 19.00, finalExam: null},
+      { matric: "9262609", class: "TSS 2", quiz: 5.00, assign1: 5, assign2: 5, groupProj: 20, labTest: 20.00, finalExam: null},
+      { matric: "9262668", class: "TSS 2", quiz: 5.33, assign1: 5, assign2: 5, groupProj: 20, labTest: 11.00, finalExam: null},
+      { matric: "9262650", class: "TSS 2", quiz: 6.67 , assign1: 5, assign2: 5, groupProj: 20, labTest: 18.50, finalExam: null},
+      { matric: "9262633", class: "TSS 2", quiz: 5.00 , assign1: 5, assign2: 5, groupProj: 20, labTest: 12.00, finalExam: null},
+      { matric: "9262602", class: "TSS 2", quiz: 7.33 , assign1: 5, assign2: 5, groupProj: 20, labTest: 11.50, finalExam: null},
+      { matric: "9262696", class: "TSS 2", quiz: 3.67 , assign1: 5, assign2: 5, groupProj: 20, labTest: 12.00, finalExam: null},
+      { matric: "9262581", class: "TSS 2", quiz: 5.67 , assign1: 5, assign2: 5, groupProj: 20, labTest: 14.00, finalExam: null},
+      { matric: "9262552", class: "TSS 2", quiz: 5.00, assign1: 5, assign2: 5, groupProj: 20, labTest: 5.50, finalExam: null},
+      { matric: "9262583", class: "TSS 2", quiz: 5.67, assign1: 5, assign2: 5, groupProj: 20, labTest: 18.00, finalExam: null},
+      { matric: "9262666", class: "TSS 2", quiz:7.33 , assign1: 5, assign2: 5, groupProj: 20, labTest: 18.50, finalExam: null},
+      { matric: "9262747", class: "TSS 2", quiz: 8.33, assign1: 5, assign2: 5, groupProj: 20, labTest: 19.00, finalExam: null},
+      { matric: "9262750", class: "TSS 2", quiz: 6.00, assign1: 5, assign2: 5, groupProj: 20, labTest: 18.00, finalExam: null},
+
+
+      // --- CLASS: TPM 12 ---
+      { matric: "9261255", class: "TPM 12", quiz: 6.67, assign1: 5, assign2: 5, groupProj: 20, labTest: 17.00, finalExam: null},
+      { matric: "9260815", class: "TPM 12", quiz: 6.00, assign1: 5, assign2: 5, groupProj: 20, labTest: 17.50, finalExam: null},
+      { matric: "9260939", class: "TPM 12", quiz: 8.33, assign1: 5, assign2: 5, groupProj: 20, labTest: 16.00, finalExam: null},
+      { matric: "9260657", class: "TPM 12", quiz: 6.00, assign1: 5, assign2: 5, groupProj: 20, labTest: 20.00, finalExam: null},
+      { matric: "9260976", class: "TPM 12", quiz: 7.33, assign1: 5, assign2: 5, groupProj: 20, labTest: 17.50, finalExam: null},
+      { matric: "9260917", class: "TPM 12", quiz: 6.67, assign1: 5, assign2: 5, groupProj: 20, labTest: 19.50, finalExam: null},
+      { matric: "9261140", class: "TPM 12", quiz: 8.33, assign1: 5, assign2: 5, groupProj: 20, labTest: 18.00, finalExam: null},
+      { matric: "9260980", class: "TPM 12", quiz: 7.33, assign1: 5, assign2: 5, groupProj: 20, labTest: 18.00, finalExam: null},
+      { matric: "9261080", class: "TPM 12", quiz: 7.67, assign1: 5, assign2: 5, groupProj: 20, labTest: 19.50, finalExam: null},
+      { matric: "9260875", class: "TPM 12", quiz: 8.00, assign1: 5, assign2: 5, groupProj: 20, labTest: 19.00, finalExam: null},
+      { matric: "9261264", class: "TPM 12", quiz: 6.33, assign1: 5, assign2: 5, groupProj: 20, labTest: 17.00, finalExam: null},
+      { matric: "9261185", class: "TPM 12", quiz: 5.00, assign1: 5, assign2: 5, groupProj: 20, labTest: 10.00, finalExam: null},
+      { matric: "9260748", class: "TPM 12", quiz: 6.33, assign1: 5, assign2: 5, groupProj: 20, labTest: 13.50, finalExam: null},
+      { matric: "9261086", class: "TPM 12", quiz: 7.33, assign1: 5, assign2: 5, groupProj: 20, labTest: 20.00, finalExam: null},
+      { matric: "9261228", class: "TPM 12", quiz: 6.67, assign1: 5, assign2: 5, groupProj: 20, labTest: 11.00, finalExam: null},
+      { matric: "9261043", class: "TPM 12", quiz: 7.00, assign1: 5, assign2: 5, groupProj: 20, labTest: 14.00, finalExam: null},
+      { matric: "9261021", class: "TPM 12", quiz: 6.33, assign1: 5, assign2: 5, groupProj: 20, labTest: 19.50, finalExam: null},
+      { matric: "9260742", class: "TPM 12", quiz: 6.00, assign1: 5, assign2: 5, groupProj: 20, labTest: 20.00, finalExam: null},
+      { matric: "9260680", class: "TPM 12", quiz: 9.33, assign1: 5, assign2: 5, groupProj: 20, labTest: 20.00, finalExam: null},
+      { matric: "9260798", class: "TPM 12", quiz: 8.33, assign1: 5, assign2: 5, groupProj: 20, labTest: 18.50, finalExam: null},
+      { matric: "9260861", class: "TPM 12", quiz: 7.00, assign1: 5, assign2: 5, groupProj: 20, labTest: 19.00, finalExam: null},
+      { matric: "9261125", class: "TPM 12", quiz: 7.33, assign1: 5, assign2: 5, groupProj: 20, labTest: 16.00, finalExam: null},
+      { matric: "9261192", class: "TPM 12", quiz: 8.33, assign1: 5, assign2: 5, groupProj: 20, labTest: 19.50, finalExam: null},
+
+
+      // --- CLASS: TPM 14 ---
+      { matric: "9261069", class: "TPM 14", quiz: 7, assign1: 5, assign2: 5, groupProj: 20, labTest: 15.50, finalExam: null},
+      { matric: "9260810", class: "TPM 14", quiz: 6.67 , assign1: 5, assign2: 5, groupProj: 20, labTest: 19.50, finalExam: null},
+      { matric: "9260713", class: "TPM 14", quiz: 7.67 , assign1: 5, assign2: 5, groupProj: 20, labTest: 20, finalExam: null},
+      { matric: "9261105", class: "TPM 14", quiz: 7.33 , assign1: 5, assign2: 5, groupProj: 20, labTest: 19.50, finalExam: null},
+      { matric: "9260949", class: "TPM 14", quiz: 8 , assign1: 5, assign2: 5, groupProj: 20, labTest: 20, finalExam: null},
+      { matric: "9260907", class: "TPM 14", quiz: 8.33 , assign1: 5, assign2: 5, groupProj: 20, labTest: 18.50, finalExam: null},
+      { matric: "9260853", class: "TPM 14", quiz: 7.33 , assign1: 5, assign2: 5, groupProj: 20, labTest: 17.50, finalExam: null},
+      { matric: "9261065", class: "TPM 14", quiz: 6 , assign1: 5, assign2: 5, groupProj: 20, labTest: 18.50, finalExam: null},
+      { matric: "9260854", class: "TPM 14", quiz: 8 , assign1: 5, assign2: 5, groupProj: 20, labTest: 17.50, finalExam: null},
+      { matric: "9260728", class: "TPM 14", quiz: 8.67 , assign1: 5, assign2: 5, groupProj: 20, labTest: 20, finalExam: null},
+      { matric: "9261244", class: "TPM 14", quiz: 7.33 , assign1: 5, assign2: 5, groupProj: 20, labTest: 20, finalExam: null},
+      { matric: "9261132", class: "TPM 14", quiz: 8.67 , assign1: 5, assign2: 5, groupProj: 20, labTest: 20, finalExam: null},
+      { matric: "9261017", class: "TPM 14", quiz: 8 , assign1: 5, assign2: 5, groupProj: 20, labTest: 19, finalExam: null},
+      { matric: "9260782", class: "TPM 14", quiz: 8 , assign1: 5, assign2: 5, groupProj: 20, labTest: 19.50, finalExam: null},
+      { matric: "9261163", class: "TPM 14", quiz: 9 , assign1: 5, assign2: 5, groupProj: 20, labTest: 18, finalExam: null},
+      { matric: "9260921", class: "TPM 14", quiz: 8.33 , assign1: 5, assign2: 5, groupProj: 20, labTest: 20, finalExam: null},
+      { matric: "9261023", class: "TPM 14", quiz: 8.67 , assign1: 5, assign2: 5, groupProj: 20, labTest: 19.50, finalExam: null},
+      { matric: "9260665", class: "TPM 14", quiz: 8.67 , assign1: 5, assign2: 5, groupProj: 20, labTest: 18, finalExam: null},
+      { matric: "9261189", class: "TPM 14", quiz: 9.67 , assign1: 5, assign2: 5, groupProj: 20, labTest: 20, finalExam: null},
+      { matric: "9260974", class: "TPM 14", quiz: 10 , assign1: 5, assign2: 5, groupProj: 20, labTest: 20, finalExam: null},
+      { matric: "9261216", class: "TPM 14", quiz: 9 , assign1: 5, assign2: 5, groupProj: 20, labTest: 18.50, finalExam: null},
+      { matric: "9262821", class: "TPM 14", quiz: 7.67, assign1: 5, assign2: 5, groupProj: 20, labTest: 20, finalExam: null},
+
+      // --- CLASS: TPM 15 ---
+      { matric: "9261119", class: "TPM 15", quiz: 5.33 , assign1: 5, assign2: 5, groupProj: 20, labTest: 17.50, finalExam: null},
+      { matric: "9260655", class: "TPM 15", quiz: 8.67 , assign1: 5, assign2: 5, groupProj: 20, labTest: 19.50, finalExam: null},
+      { matric: "9260847", class: "TPM 15", quiz: 8.00  , assign1: 5, assign2: 5, groupProj: 20, labTest: 19.50, finalExam: null},
+      { matric: "9261209", class: "TPM 15", quiz: 8.00 , assign1: 5, assign2: 5, groupProj: 20, labTest: 19.50, finalExam: null},
+      { matric: "9260797", class: "TPM 15", quiz: 9.33 , assign1: 5, assign2: 5, groupProj: 20, labTest: 20, finalExam: null},
+      { matric: "9260899", class: "TPM 15", quiz: 7.33 , assign1: 5, assign2: 5, groupProj: 20, labTest: 18.50, finalExam: null},
+      { matric: "9261057", class: "TPM 15", quiz: 7.67 , assign1: 5, assign2: 5, groupProj: 20, labTest: 19.50, finalExam: null},
+      { matric: "9260828", class: "TPM 15", quiz: 8.33 , assign1: 5, assign2: 5, groupProj: 20, labTest: 20, finalExam: null},
+      { matric: "9261148", class: "TPM 15", quiz: 4.67 , assign1: 5, assign2: 5, groupProj: 20, labTest: 20, finalExam: null},
+      { matric: "9261003", class: "TPM 15", quiz: 7.33 , assign1: 5, assign2: 5, groupProj: 20, labTest: 15, finalExam: null},
+      { matric: "9261234", class: "TPM 15", quiz:  5.00 , assign1: 5, assign2: 5, groupProj: 20, labTest: 12, finalExam: null},
+      { matric: "9260930", class: "TPM 15", quiz: 7.33 , assign1: 5, assign2: 5, groupProj: 20, labTest: 20, finalExam: null},
+      { matric: "9262718", class: "TPM 15", quiz: 6.67 , assign1: 5, assign2: 5, groupProj: 20, labTest: 20, finalExam: null},
+      { matric: "9260965", class: "TPM 15", quiz: 8.33 , assign1: 5, assign2: 5, groupProj: 20, labTest: 19, finalExam: null},
+      { matric: "9261094", class: "TPM 15", quiz: 8.33 , assign1: 5, assign2: 5, groupProj: 20, labTest: 20, finalExam: null},
+      { matric: "9260721", class: "TPM 15", quiz: 9.33 , assign1: 5, assign2: 5, groupProj: 20, labTest: 20, finalExam: null},
+      { matric: "9261273", class: "TPM 15", quiz: 7.00 , assign1: 5, assign2: 5, groupProj: 20, labTest: 20, finalExam: null},
+      { matric: "9260998", class: "TPM 15", quiz: 7.33 , assign1: 5, assign2: 5, groupProj: 20, labTest: 20, finalExam: null},
+      { matric: "9260890", class: "TPM 15", quiz: 8.00 , assign1: 5, assign2: 5, groupProj: 20, labTest: 19.50, finalExam: null},
+      { matric: "9260699", class: "TPM 15", quiz: 7.33 , assign1: 5, assign2: 5, groupProj: 20, labTest: 19.5, finalExam: null}
+
+
+      
+    ];
+
+    const studentDatabase = {};
+    studentListRaw.forEach(item => {
+      studentDatabase[item.matric.toUpperCase()] = {
+        name: item.name,
+        class: item.class,
+        scores: {
+          quiz: item.quiz !== null ? item.quiz : 0,
+          assign1: item.assign1 !== null ? item.assign1 : 0,
+          assign2: item.assign2 !== null ? item.assign2 : 0,
+          groupProj: item.groupProj !== null ? item.groupProj : 0,
+          labTest: item.labTest !== null ? item.labTest : 0,
+          finalExam: item.finalExam !== null ? item.finalExam : 0
+        }
+      };
+    });
+
+    let chartInstance = null;
+    let currentStudentCarryMark = 0;
+
+    function getGrade(scorePercentage) {
+      for (let g of GRADE_SCHEME) {
+        if (scorePercentage >= g.min && scorePercentage <= g.max) {
+          return g.grade;
+        }
+      }
+      return "F";
+    }
+
+    // Special Grade Scaler for Quiz (Scaled from 10 points to 100%)
+    function getQuizGrade(quizMarkOutOf10) {
+      const percentage = (quizMarkOutOf10 / 10) * 100;
+      return getGrade(percentage);
+    }
+
+    function handleLecturerTabClick() {
+      if (isLecturerUnlocked) {
+        switchTab('lecturerView');
+      } else {
+        openPasswordModal();
+      }
+    }
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+      if (tabId === 'studentView') {
+        document.querySelectorAll('.tab-btn')[0].classList.add('active');
+        document.getElementById('studentView').classList.add('active');
+      } else {
+        document.querySelectorAll('.tab-btn')[1].classList.add('active');
+        document.getElementById('lecturerView').classList.add('active');
+        loadLecturerDashboard();
+      }
+    }
+
+    function openPasswordModal() {
+      const modal = document.getElementById("passwordModal");
+      const input = document.getElementById("lecturerPasswordInput");
+      const error = document.getElementById("modalError");
+      
+      input.value = "";
+      error.style.display = "none";
+      modal.style.display = "flex";
+      input.focus();
+    }
+
+    function closePasswordModal() {
+      document.getElementById("passwordModal").style.display = "none";
+    }
+
+    function verifyPassword() {
+      const enteredPassword = document.getElementById("lecturerPasswordInput").value;
+      const error = document.getElementById("modalError");
+
+      if (enteredPassword === LECTURER_PASSWORD) {
+        isLecturerUnlocked = true;
+        closePasswordModal();
+        switchTab('lecturerView');
+      } else {
+        error.style.display = "block";
+        document.getElementById("lecturerPasswordInput").focus();
+      }
+    }
+
+    function getQuizQuestionDetails(quizMark) {
+      const correctQty = Math.round((quizMark / 10) * TOTAL_QUIZ_QUESTIONS);
+      const wrongQty = TOTAL_QUIZ_QUESTIONS - correctQty;
+      return { correctQty, wrongQty };
+    }
+
+    // ================= STUDENT SEARCH LOGIC =================
+    function searchResult() {
+      let suffix = document.getElementById("matricInput").value.trim().toUpperCase();
+      const resultCard = document.getElementById("resultCard");
+      const errorMessage = document.getElementById("errorMessage");
+
+      resultCard.style.display = "none";
+      errorMessage.style.display = "none";
+
+      if (suffix === "") {
+        showError("Please enter the remaining digits of your matric number.");
+        return;
+      }
+
+      let fullMatric = suffix.startsWith(DEFAULT_PREFIX) ? suffix : DEFAULT_PREFIX + suffix;
+      const student = studentDatabase[fullMatric];
+
+      if (student) {
+        document.getElementById("resName").textContent = student.name;
+        document.getElementById("resMatric").textContent = `Matric No: ${fullMatric}`;
+        document.getElementById("resClass").textContent = `Class: ${student.class}`;
+
+        let carryMarkTotal = 0;
+        let tbodyHTML = "";
+
+        ASSESSMENTS.forEach(item => {
+          if (item.key !== "finalExam") {
+            const earnedMark = student.scores[item.key] || 0;
+            carryMarkTotal += earnedMark;
+
+            if (item.key === "quiz") {
+              const quizInfo = getQuizQuestionDetails(earnedMark);
+              const quizGrade = getQuizGrade(earnedMark);
+              const isFail = quizGrade === "F";
+              const tagClass = isFail ? "quiz-grade-tag fail" : "quiz-grade-tag";
+
+              tbodyHTML += `
+                <tr>
+                  <td>
+                    <strong>${item.name}</strong>
+                    <span class="${tagClass}">Grade: ${quizGrade}</span>
+                    <div class="quiz-breakdown">
+                      <span class="correct">✔ ${quizInfo.correctQty} Correct</span> | 
+                      <span class="wrong">✖ ${quizInfo.wrongQty} Wrong</span>
+                    </div>
+                  </td>
+                  <td class="weight-col">${item.weight}%</td>
+                  <td class="score-col"><strong>${earnedMark.toFixed(2)}</strong> / ${item.weight}</td>
+                </tr>
+              `;
+            } else {
+              tbodyHTML += `
+                <tr>
+                  <td><strong>${item.name}</strong></td>
+                  <td class="weight-col">${item.weight}%</td>
+                  <td class="score-col"><strong>${earnedMark.toFixed(2)}</strong> / ${item.weight}</td>
+                </tr>
+              `;
+            }
+          }
+        });
+
+        currentStudentCarryMark = carryMarkTotal;
+
+        document.getElementById("marksBody").innerHTML = tbodyHTML;
+        document.getElementById("resCurrentTotal").textContent = `${carryMarkTotal.toFixed(2)} / 60%`;
+
+        const currentGrade = getGrade(carryMarkTotal);
+        const gradeBadge = document.getElementById("resGrade");
+        gradeBadge.textContent = `Grade: ${currentGrade}`;
+        
+        if (currentGrade === "F") {
+          gradeBadge.className = "grade-badge fail";
+        } else {
+          gradeBadge.className = "grade-badge";
+        }
+
+        resultCard.style.display = "block";
+
+        document.getElementById("targetGradeSelect").value = "A";
+        calculateTargetExamScore();
+
+      } else {
+        showError("No record found for matric number: " + fullMatric);
+      }
+    }
+
+    // ================= TARGET GRADE CALCULATOR LOGIC (MCQs Out Of 60) =================
+    function calculateTargetExamScore() {
+      const selectedTargetGrade = document.getElementById("targetGradeSelect").value;
+      const targetObj = GRADE_SCHEME.find(g => g.grade === selectedTargetGrade);
+
+      if (!targetObj) return;
+
+      const targetMinScore = targetObj.min;
+      const neededFromExamWeighted = targetMinScore - currentStudentCarryMark;
+
+      const messageElem = document.getElementById("targetMessage");
+      const outputElem = document.getElementById("targetScoreOutput");
+
+      if (neededFromExamWeighted <= 0) {
+        messageElem.textContent = `🎉 You have already secured a Grade ${selectedTargetGrade} based on your carry mark alone!`;
+        outputElem.textContent = "0 / 60 MCQs";
+        outputElem.style.color = "var(--success)";
+      } else {
+        const rawExamScorePercentNeeded = (neededFromExamWeighted / FINAL_EXAM_WEIGHT) * 100;
+        const correctMcqNeeded = Math.ceil((rawExamScorePercentNeeded / 100) * TOTAL_FINAL_QUESTIONS);
+
+        if (correctMcqNeeded > TOTAL_FINAL_QUESTIONS) {
+          const maxAttainableScore = currentStudentCarryMark + FINAL_EXAM_WEIGHT;
+          const maxAttainableGrade = getGrade(maxAttainableScore);
+
+          messageElem.textContent = `⚠️ Grade ${selectedTargetGrade} requires >60 MCQs. Highest attainable grade is ${maxAttainableGrade}.`;
+          outputElem.textContent = `>${TOTAL_FINAL_QUESTIONS} MCQs (Not Possible)`;
+          outputElem.style.color = "var(--error)";
+        } else {
+          messageElem.textContent = `To get Grade ${selectedTargetGrade} (${targetMinScore}%), you need to answer correctly at least:`;
+          outputElem.textContent = `${correctMcqNeeded} / 60 MCQs (${rawExamScorePercentNeeded.toFixed(1)}%)`;
+          outputElem.style.color = "var(--primary)";
+        }
+      }
+    }
+
+    function resetForm() {
+      const input = document.getElementById("matricInput");
+      input.value = "";
+      document.getElementById("resultCard").style.display = "none";
+      document.getElementById("errorMessage").style.display = "none";
+      input.focus();
+    }
+
+    function showError(message) {
+      const errorMessage = document.getElementById("errorMessage");
+      errorMessage.textContent = message;
+      errorMessage.style.display = "block";
+    }
+
+    // ================= LECTURER DASHBOARD LOGIC =================
+    function loadLecturerDashboard() {
+      const selectedClass = document.getElementById("classFilter").value;
+      const selectedAssessment = document.getElementById("assessmentFilter").value;
+
+      const studentList = [];
+      const gradeCounts = { "A+": 0, "A": 0, "A-": 0, "B+": 0, "B": 0, "B-": 0, "C+": 0, "C": 0, "C-": 0, "D": 0, "F": 0 };
+
+      let maxPossibleScore = 100;
+      if (selectedAssessment === "overall") {
+        maxPossibleScore = 100;
+      } else if (selectedAssessment === "quiz") {
+        maxPossibleScore = 10;
+      } else {
+        const itemConfig = ASSESSMENTS.find(a => a.key === selectedAssessment);
+        maxPossibleScore = itemConfig.weight;
+      }
+
+      Object.keys(studentDatabase).forEach(matric => {
+        const student = studentDatabase[matric];
+
+        if (selectedClass !== "ALL" && student.class !== selectedClass) {
+          return;
+        }
+
+        if (selectedAssessment === "overall") {
+          let totalEarned = 0;
+          ASSESSMENTS.forEach(item => {
+            totalEarned += student.scores[item.key] || 0;
+          });
+
+          const grade = getGrade(totalEarned);
+          gradeCounts[grade]++;
+
+          studentList.push({
+            matric,
+            name: student.name,
+            scoreText: `${totalEarned.toFixed(2)} / 100%`,
+            scoreValue: totalEarned,
+            detail: `${student.class} | Grade: ${grade}`
+          });
+        } else if (selectedAssessment === "quiz") {
+          const earnedMark = student.scores.quiz || 0;
+          const quizInfo = getQuizQuestionDetails(earnedMark);
+          const quizGrade = getQuizGrade(earnedMark);
+          gradeCounts[quizGrade]++;
+
+          studentList.push({
+            matric,
+            name: student.name,
+            scoreText: `${earnedMark.toFixed(2)} / 10`,
+            scoreValue: earnedMark,
+            detail: `${student.class} | Grade: ${quizGrade} (✔ ${quizInfo.correctQty} Right)`
+          });
+        } else {
+          const itemConfig = ASSESSMENTS.find(a => a.key === selectedAssessment);
+          const earnedMark = student.scores[selectedAssessment] || 0;
+          const percentage = (earnedMark / itemConfig.weight) * 100;
+          const grade = getGrade(percentage);
+          gradeCounts[grade]++;
+
+          studentList.push({
+            matric,
+            name: student.name,
+            scoreText: `${earnedMark.toFixed(2)} / ${itemConfig.weight}`,
+            scoreValue: earnedMark,
+            detail: `${student.class}`
+          });
+        }
+      });
+
+      const totalStudents = studentList.length;
+      let totalScoreSum = 0;
+      let highestMark = 0;
+      let passingCount = 0;
+
+      studentList.forEach(s => {
+        totalScoreSum += s.scoreValue;
+        if (s.scoreValue > highestMark) highestMark = s.scoreValue;
+        const percentage = (s.scoreValue / maxPossibleScore) * 100;
+        if (percentage >= 50) passingCount++;
+      });
+
+      const avgScore = totalStudents > 0 ? (totalScoreSum / totalStudents) : 0;
+      const passRate = totalStudents > 0 ? ((passingCount / totalStudents) * 100) : 0;
+
+      document.getElementById("metricTotalStudents").textContent = totalStudents;
+      document.getElementById("metricClassAverage").textContent = `${avgScore.toFixed(1)} / ${maxPossibleScore}`;
+      document.getElementById("metricHighestMark").textContent = `${highestMark.toFixed(1)} / ${maxPossibleScore}`;
+      document.getElementById("metricPassRate").textContent = `${passRate.toFixed(1)}%`;
+
+      renderGradeChart(gradeCounts);
+      renderGradeSummaryGrid(gradeCounts);
+
+      studentList.sort((a, b) => b.scoreValue - a.scoreValue);
+
+      const top3 = studentList.slice(0, 3);
+      const lowest3 = studentList.length >= 3 ? studentList.slice(-3).reverse() : studentList.slice().reverse();
+      const midStart = Math.max(0, Math.floor((studentList.length - 3) / 2));
+      const middle3 = studentList.slice(midStart, midStart + 3);
+
+      renderRankList("topList", top3);
+      renderRankList("middleList", middle3);
+      renderRankList("lowestList", lowest3);
+    }
+
+    function renderGradeChart(gradeCounts) {
+      const ctx = document.getElementById('gradeChart').getContext('2d');
+      const labels = Object.keys(gradeCounts);
+      const dataValues = Object.values(gradeCounts);
+
+      if (chartInstance) {
+        chartInstance.destroy();
+      }
+
+      chartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Number of Students',
+            data: dataValues,
+            backgroundColor: [
+              '#10b981', '#34d399', '#2563eb', '#3b82f6', '#60a5fa', 
+              '#f59e0b', '#fbbf24', '#f97316', '#ef4444', '#dc2626'
+            ],
+            borderRadius: 6
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { display: false }
+          },
+          scales: {
+            x: {
+              grid: { display: false }
+            },
+            y: {
+              beginAtZero: true,
+              ticks: { precision: 0 },
+              grid: { color: '#f1f5f9' }
+            }
+          }
+        }
+      });
+    }
+
+    function renderGradeSummaryGrid(gradeCounts) {
+      const grid = document.getElementById('gradeSummaryGrid');
+      grid.innerHTML = "";
+
+      Object.keys(gradeCounts).forEach(grade => {
+        grid.innerHTML += `
+          <div class="grade-count-box">
+            <div class="lbl">${grade}</div>
+            <div class="val">${gradeCounts[grade]}</div>
+          </div>
+        `;
+      });
+    }
+
+    function renderRankList(elementId, students) {
+      const listElement = document.getElementById(elementId);
+      listElement.innerHTML = "";
+
+      if (students.length === 0) {
+        listElement.innerHTML = `<li class="no-data">No student records found for this selection.</li>`;
+        return;
+      }
+
+      students.forEach(student => {
+        listElement.innerHTML += `
+          <li class="rank-item">
+            <div>
+              <div class="rank-name">${student.name} <span class="rank-matric-tag">(${student.matric})</span></div>
+              <div class="rank-details">${student.detail}</div>
+            </div>
+            <div class="rank-score">${student.scoreText}</div>
+          </li>
+        `;
+      });
+    }
+
+    // Keyboard Event Listeners
+    document.getElementById("matricInput").addEventListener("keypress", function(event) {
+      if (event.key === "Enter") {
+        searchResult();
+      }
+    });
+
+    document.getElementById("lecturerPasswordInput").addEventListener("keypress", function(event) {
+      if (event.key === "Enter") {
+        verifyPassword();
+      }
+    });
+  </script>
+
+</body>
+</html>
